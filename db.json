@@ -1,0 +1,71 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "nome": "Maria das Receitas",
+      "email": "maria@example.com",
+      "senha": "senha123"
+    }
+  ],
+  "cardapios":[ {
+    "id_usuario": 1,
+    "id_prato": 201,
+    "data": "2025-10-06T00:00:00-03:00",
+    "turno": "manhã",
+    "refeicao": {
+      "titulo": "almoço",
+      "itens": ["Arroz", "Feijão", "Bife"],
+      "img": ["https://i.pinimg.com/236x/5c/4c/c7/5c4cc7aa84e7b969255533a4c77952ee.jpg", "https://cdn0.umcomo.com.br/pt/posts/6/8/2/como_fazer_limonada_286_600.jpg"],
+      "bebida": "suco limão"
+    }
+  },
+  {
+    "id_usuario": 1,
+    "id_prato": 202,
+    "data": "2025-10-06T00:00:00-03:00",
+    "turno": "integral",
+    "refeicao": {
+      "titulo": "almoço",
+      "itens": ["Arroz", "Feijão", "Bife"],
+      "img": ["https://i.pinimg.com/236x/5c/4c/c7/5c4cc7aa84e7b969255533a4c77952ee.jpg", "https://cdn0.umcomo.com.br/pt/posts/6/8/2/como_fazer_limonada_286_600.jpg"],
+      "bebida": "suco limão"
+    },
+    "lanche": {
+      "titulo": "Café da tarde",
+      "itens": [
+        "Pão com manteiga",
+        "Bolo de fubá",
+        "Café com leite"
+      ],
+      "img": ["https://blog.unicpharma.com.br/wp-content/uploads/2019/06/manteiga_1.jpg", "https://hubdocafe.cooxupe.com.br/wp-content/uploads/2024/05/beneficios-do-cafe-com-leite-510x337.jpg"],
+      "bebida": "suco laranja"
+    }
+  },
+  {
+    "id_usuario": 1,
+    "id_prato": 203,
+    "data": "2025-10-06T00:00:00-03:00",
+    "turno": "tarde",
+    "refeicao": {
+      "titulo": "almoço da tarde",
+      "itens": ["Arroz", "Feijão", "Bife"],
+      "img": ["https://i.pinimg.com/236x/5c/4c/c7/5c4cc7aa84e7b969255533a4c77952ee.jpg", "https://cdn0.umcomo.com.br/pt/posts/6/8/2/como_fazer_limonada_286_600.jpg"],
+      "bebida": "suco limão"
+    }
+  },
+  {
+    "id_usuario": 1,
+    "id_prato": 204,
+    "data": "2025-10-06T00:00:00-03:00",
+    "turno": "noturno",
+    "refeicao": {
+      "titulo": "janta",
+      "itens": ["Arroz", "tutu", "Bife"],
+      "img": ["https://i.pinimg.com/236x/5c/4c/c7/5c4cc7aa84e7b969255533a4c77952ee.jpg", "https://cdn0.umcomo.com.br/pt/posts/6/8/2/como_fazer_limonada_286_600.jpg"],
+      "bebida": "suco limão"
+    }
+  }
+],
+  "respostas": [],
+  "votacao": []
+}
