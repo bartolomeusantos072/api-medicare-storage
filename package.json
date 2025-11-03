@@ -1,18 +1,8 @@
 {
-  "dependencies": {
-    "bcrypt": "^6.0.0",
-    "cors": "^2.8.5"
-  },
-  "name": "api-storage-tiaw",
+  "name": "json-server-vercel-mock",
   "version": "1.0.0",
   "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Bartolomeu Uender",
-  "license": "ISC",
-  "description": "",
-  "devDependencies": {
-    "json-server": "^1.0.0-beta.3"
+  "dependencies": {
+    "json-server": "^0.17.4"
   }
 }
