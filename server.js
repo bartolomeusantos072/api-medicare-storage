@@ -1,42 +1,88 @@
-// server.js
+var fs = require('fs');
 const jsonServer = require('json-server');
-const server = jsonServer.create();
+const jsServer = jsonServer.create();
+const router = jsonServer.router('db.json');
 const middlewares = jsonServer.defaults();
+const expressSession = require('express-session');
+const sharedSession = require("express-socket.io-session");
+const Auth = require('./auth');
 
-server.use(middlewares);
-server.use(jsonServer.bodyParser);
 
-// Configuração CRUCIAL para Serverless: 
-// 1. Você pode simular a rota GET/usuarios com dados estáticos se precisar
-server.get('/login', (req, res) => {
-    // Retorna uma lista de exemplo, pois não há persistência na Vercel
-    res.status(200).json([
-        { id: 1, nome: "Vercel Mock", email: "maria@example", categoria: "senha123" }
-    ]);
+// Set default middlewares (logger, static, cors and no-cache)
+let session = expressSession({
+    secret: '63?gdº93!6dg36dºb36%Vv57V%c$%/(!V497',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {secure: false}
+});
+jsServer.use(session);
+jsServer.use(middlewares);
+jsServer.use(jsonServer.bodyParser);
+
+let config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+
+let configuredRouter = Auth.configure(router, config);
+
+jsServer.use('/api', configuredRouter);
+
+http_server = require('http').createServer(jsServer);
+
+if (config.service)
+    if (config.service === 'peerjs') initPJS();
+    else initWS();
+
+let port = config.port || 3000;
+
+http_server.listen(port, () => {
+    console.log('JSON Server is running on port ' + port)
 });
 
 
-// 2. Simula o sucesso da rota POST (Cadastro)
-server.post('/login', (req, res) => {
-    const novoUsuario = req.body;
-    
-    // Simula a validação de email repetido (OPCIONAL, mas recomendável)
-    if (novoUsuario.email === 'mock@vercel.com') {
-        return res.status(400).json({
-            sucesso: false,
-            msg: 'Este e-mail já existe (Simulação Vercel).'
+function initWS() {
+    console.log('Starting socket.io server ...');
+
+    // Web Sockets
+    const socketIO = require('socket.io')(http_server);
+    socketIO.use(sharedSession(session));
+
+    const wsConnections = {};
+
+    socketIO.on('connection', function (socket) {
+        console.log('Websocket connection');
+        let username = socket.handshake.session.username;
+        if (!wsConnections[username]) wsConnections[username] = socket;
+
+        socket.on('connected', function (data) {
+            console.log("Connected!");
+        })
+
+        socket.on('message', function (data) {
+            let kk = socketIO.clients;
+            if (socket.handshake.session.username) {
+                const destSocket = wsConnections[data.dest];
+                if (destSocket) {
+                    console.log('Message: ' + data.message + ' from user ' + username + ', to ' + data.dest);
+                    wsConnections[data.dest].emit('message', {
+                        message: data.message,
+                        from: socket.handshake.session.username
+                    });
+                }
+            } else {
+                console.log('User not logged in. Message: ' + data.message + ', to ' + data.dest);
+            }
         });
-    }
-
-    // SIMULA o cadastro bem-sucedido
-    // Retorna o novo objeto com um ID, mas não salva no db.json
-    res.status(201).json({
-        id: Date.now(), // Simula a geração de ID
-        ...novoUsuario
     });
-});
+}
 
-// A Vercel precisa que exportemos o servidor como um módulo.
-// O json-server não é projetado para isso, então usamos a exportação padrão do Express
-// (o json-server é construído com Express)
-module.exports = server;
+function initPJS() {
+
+    console.log('Starting peerjs server ...');
+
+    const app_ps = require('peer').ExpressPeerServer(http_server, {debug: false, allow_discovery: true});
+
+    jsServer.use('/peerjs', app_ps);
+    app_ps.on('connection', function (id) {
+        console.log('Peerjs connection with id=' + id)
+    });
+
+}

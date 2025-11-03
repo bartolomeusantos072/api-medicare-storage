@@ -1,10 +1,67 @@
 {
-  "usuarios": [
+  "users": [
+    {
+      "username": "jo",
+      "email": "jo@jo.com",
+      "password": "jo",
+      "id": 1
+    },
+    {
+      "username": "tu",
+      "email": "tu@tu.com",
+      "password": "tu",
+      "id": 2
+    },
+    {
+      "username": "userA",
+      "email": "userA@example.com",
+      "password": "userA",
+      "id": 3
+    },
+    {
+      "username": "userB",
+      "email": "userB@example.com",
+      "password": "userB",
+      "id": 4
+    }
+  ],
+  "orders": [
     {
       "id": 1,
-      "nome": "Maria das Receitas",
-      "email": "maria@example.com",
-      "senha": "senha123"
+      "userId": 1,
+      "description": "One order"
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "description": "Another order"
+    },
+    {
+      "id": 3,
+      "userId": 1,
+      "description": "More orders"
+    },
+    {
+      "id": 4,
+      "userId": 2,
+      "description": "My order"
+    },
+    {
+      "id": 5,
+      "userId": 3,
+      "description": "My other order"
+    }
+  ],
+  "files": [
+    {
+      "id": 1,
+      "userId": 1,
+      "filename": "json_logo.png"
+    },
+    {
+      "filename": "ac793700f322a3760ebfffc88cf76af3.jpeg",
+      "userId": 2,
+      "id": 2
     }
   ]
 }

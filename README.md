@@ -1,101 +1,93 @@
-# 🍽️ API Fake - Sistema de Refeições da Cozinha Escolar
+# json-server with authentication, authorization, and peerjs-server added
 
-Este projeto simula uma API RESTful simples para uso em estudos de **desenvolvimento front-end**, utilizando o [JSON Server](https://github.com/typicode/json-server) com dados inspirados em um sistema de refeições escolares.
+This application is intended for web-only development purposes. It uses the node package [```json-server```](https://github.com/typicode/json-server) to automatically generate an REST API from a json database file.
 
----
+This version adds:
 
-## 🎯 Objetivo
+- Authentication using express-session. Sign in, sign out, and sign up
+- Authorization. You can configure some routes to be private. Only users that are signed in and are the owners of the entities can accss them
+- PeerJS server. Access [peerjs-server](https://github.com/peers/peerjs-server) functionality at ´/peerjs´
+- Websockets server using [socket.io](https://socket.io/)
 
-Permitir que estudantes desenvolvam e testem aplicações front-end que:
+Prerequisites:
 
-- Consomem APIs REST com `fetch` ou `axios`
-- Realizam operações de CRUD
-- Trabalham com autenticação (simulada)
-- Implementam lógica de filtros, votos, e associação de dados
-- Entendem relações entre entidades como "usuário", "prato", "votação"
+* [Nodejs](https://nodejs.org) installed
 
----
 
-## 📦 Estrutura dos Dados
+To run the application:
 
-O banco simulado (`db.json`) possui as seguintes "tabelas":
+- Execute `npm install`
+- Execute `npm run start`
+- The API is ready at `http://localhost:3000/api`
+- The peerjs service is ready at `http://localhost:3000/peerjs`
 
-### 👩‍🍳 `usuario`
+# How it works
 
-Contém os dados das usuario que cadastram pratos.
+The servers reads a configuration file at startup to add the desired features. Here it is an example:
 
-```json
+```
 {
-  "id_usuario": 1,
-  "nome": "Maria",
-  "email": "maria@medica.com",
-  "senha": "senha_segura"
+  "authentication": {
+    "private": false
+  },
+  "authorization": [
+    "orders", "users"
+  ],
+  "fileUpload": true,
+  "filter": [
+    {
+      "entity": "users",
+      "fields": [
+        "id",
+        "username"
+  ]}]
 }
 ```
 
----
+### Options
+
+#### `authentication`
+
+This is an object that can contain a field `private`. If the fild is present, then authentication is added to the api. In this case the server assumes that there is an entity `users` int the database, and it contains the fields `username, password`. There are three new endpoints:
+ 
+`POST /users/login`
+
+It expects a body in the form `application/json` with a single JSON object with two fields: `username, password`. If there is a user that matches, it stores the user id in the express session and the following REST calls from the same client are authenticated.
+
+`POST /users/logout`
+
+It ignores the body and simple deletes the user id from the express session. All the following REST calls from the same client are not authenticated.
+
+`GET /users/self`
+
+If the user is authenticated, it returns a `200 OK` with the user info. If not, it returns a `400 BAD_REQUEST` with error information.
 
 
----
+#### `authorization`
 
-## 🚀 Como Rodar
 
-1. Instale o JSON Server:
+This option only activates if `authentication` is enabled. It allows to restrict access to certain entities only for the owners of those ones. For this option to work, the entity that will be subject of authorization must have a filed called `userId` which value is the id of a `users` entity (the owner).
 
-```bash
-npm install -g json-server
-```
+This field contains an array of string corresponding to the entities that we want to restrict access.
 
-2. Inicie o servidor com o arquivo:
 
-```bash
-json-server --watch db.json --port 3001
-```
+#### `fileUpload`
 
-3. Acesse:
+This field has to be an object. If it is present, a new endpoint `files` is created to upload and download binary files. The object must contain a filed `dest` with a relative path to an existing folder where all files will be stored. The object may also contain a boolean field `keepNames` if yu want the files stored with the same name they get in the multi-part body.
 
-```
-http://localhost:3001/prato_tb
-http://localhost:3001/usuario_tb
-http://localhost:3001/votacao_tb
-```
 
----
+`POST /files`
 
-## 🔐 Simulação de Permissões
+It uploads a set of files in a multi-part body. It returns an array of filenames as stored in the server.
 
-**Alunos (usuários anônimos):**
+`GET /files/:filename`
 
-- Podem **listar pratos**
-- Podem **votar** via `POST` em `/votacao_tb`
+If returns the file with name `filename`.
 
-**usuarios (login simulado):**
+#### `filter`
 
-- Podem **cadastrar, editar e excluir** seus próprios pratos
-- Só acessam pratos vinculados ao seu `id_usuario`
+This feature allows to have restricted access to entities that you do not own. For those entities, only the fields specified in the array `fields` will be displayed. This feature should not be used at the same time that `authorization` with the same entity.
 
----
+#### `service`
 
-## 💡 Sugestões de Exercícios com Front-End
-
-- Página pública com:
-  - Listagem dos pratos do dia
-  - Filtros por data, turno ou usuario
-  - Botão "Curtir" para votar
-
-- Painel administrativo para usuario:
-  - Tela de login
-  - Lista e formulário de cadastro e edição de pratos
-  - Validação e proteção de rotas
-
----
-
-## 🧠 Extras
-
-- Simule login com `localStorage` e headers fake
-- Use `axios.interceptors` para simular autenticação
-- Implemente feedbacks visuais para votos e CRUD
-
----
-
-> Projeto educacional para fins de aprendizado e prática com APIs REST. Divirta-se criando! 🎨💻
+This feature allows to start two additional services: [peerjs](https://peerjs.com/) and [socket.io](https://socket.io/). Accepted values are `peerjs` and `ws`. There are two files in the `public` folder to test the services: `index_ws.html` and `index_peerjs.html`.

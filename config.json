@@ -1,0 +1,21 @@
+{
+  "authentication": {
+    "private": false
+  },
+  "authorization": [
+    "orders", "files"
+  ],
+  "fileUpload": {
+    "dest": "data",
+    "keepNames": true
+  },
+  "filter": [
+    {
+      "entity": "users",
+      "fields": [
+        "id",
+        "username"
+  ]}],
+  "port": 3000,
+  "service": "ws"
+}
