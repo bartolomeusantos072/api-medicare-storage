@@ -1,29 +1,38 @@
-# json-server with authentication, authorization, and peerjs-server added
+Aqui está a tradução completa para o português:
 
-This application is intended for web-only development purposes. It uses the node package [```json-server```](https://github.com/typicode/json-server) to automatically generate an REST API from a json database file.
+---
 
-This version adds:
+# json-server com autenticação, autorização e servidor peerjs adicionados
 
-- Authentication using express-session. Sign in, sign out, and sign up
-- Authorization. You can configure some routes to be private. Only users that are signed in and are the owners of the entities can accss them
-- PeerJS server. Access [peerjs-server](https://github.com/peers/peerjs-server) functionality at ´/peerjs´
-- Websockets server using [socket.io](https://socket.io/)
+Esta aplicação é destinada **apenas para fins de desenvolvimento web**.
+Ela utiliza o pacote do Node [`json-server`](https://github.com/typicode/json-server) para gerar automaticamente uma **API REST** a partir de um arquivo de banco de dados JSON.
 
-Prerequisites:
+Esta versão adiciona:
 
-* [Nodejs](https://nodejs.org) installed
+* **Autenticação** usando *express-session*: login, logout e cadastro.
+* **Autorização**: é possível configurar algumas rotas como privadas. Apenas usuários autenticados e donos das entidades podem acessá-las.
+* **Servidor PeerJS**: acessa as funcionalidades de [peerjs-server](https://github.com/peers/peerjs-server) em `/peerjs`.
+* **Servidor WebSocket** usando [socket.io](https://socket.io/).
 
+### Pré-requisitos:
 
-To run the application:
+* Ter o [Node.js](https://nodejs.org) instalado.
 
-- Execute `npm install`
-- Execute `npm run start`
-- The API is ready at `http://localhost:3000/api`
-- The peerjs service is ready at `http://localhost:3000/peerjs`
+---
 
-# How it works
+### Para executar a aplicação:
 
-The servers reads a configuration file at startup to add the desired features. Here it is an example:
+* Execute `npm install`
+* Execute `npm run start`
+* A API estará disponível em `http://localhost:3000/api`
+* O serviço PeerJS estará disponível em `http://localhost:3000/peerjs`
+
+---
+
+# Como funciona
+
+O servidor lê um arquivo de configuração na inicialização para adicionar os recursos desejados.
+Aqui está um exemplo:
 
 ```
 {
@@ -44,50 +53,86 @@ The servers reads a configuration file at startup to add the desired features. H
 }
 ```
 
-### Options
+---
 
-#### `authentication`
+### Opções
 
-This is an object that can contain a field `private`. If the fild is present, then authentication is added to the api. In this case the server assumes that there is an entity `users` int the database, and it contains the fields `username, password`. There are three new endpoints:
- 
-`POST /users/login`
+#### `authentication` (autenticação)
 
-It expects a body in the form `application/json` with a single JSON object with two fields: `username, password`. If there is a user that matches, it stores the user id in the express session and the following REST calls from the same client are authenticated.
+Este é um objeto que pode conter o campo `private`.
+Se este campo estiver presente, a autenticação será adicionada à API.
+Nesse caso, o servidor **assume que existe uma entidade `users` no banco de dados**, contendo os campos `username` e `password`.
+São criados três novos *endpoints*:
 
-`POST /users/logout`
+---
 
-It ignores the body and simple deletes the user id from the express session. All the following REST calls from the same client are not authenticated.
+**`POST /users/login`**
 
-`GET /users/self`
+* Espera um corpo JSON (`application/json`) com um objeto contendo dois campos: `username` e `password`.
+* Se houver um usuário correspondente, o servidor armazena o ID do usuário na *session* do express, e as próximas requisições REST do mesmo cliente estarão autenticadas.
 
-If the user is authenticated, it returns a `200 OK` with the user info. If not, it returns a `400 BAD_REQUEST` with error information.
+---
 
+**`POST /users/logout`**
 
-#### `authorization`
+* Ignora o corpo da requisição e apenas remove o ID do usuário da *session* do express.
+* Todas as requisições REST seguintes, vindas do mesmo cliente, deixarão de estar autenticadas.
 
+---
 
-This option only activates if `authentication` is enabled. It allows to restrict access to certain entities only for the owners of those ones. For this option to work, the entity that will be subject of authorization must have a filed called `userId` which value is the id of a `users` entity (the owner).
+**`GET /users/self`**
 
-This field contains an array of string corresponding to the entities that we want to restrict access.
+* Se o usuário estiver autenticado, retorna `200 OK` com as informações do usuário.
+* Caso contrário, retorna `400 BAD_REQUEST` com informações de erro.
 
+---
 
-#### `fileUpload`
+#### `authorization` (autorização)
 
-This field has to be an object. If it is present, a new endpoint `files` is created to upload and download binary files. The object must contain a filed `dest` with a relative path to an existing folder where all files will be stored. The object may also contain a boolean field `keepNames` if yu want the files stored with the same name they get in the multi-part body.
+Esta opção só é ativada se a autenticação estiver habilitada.
+Ela permite **restringir o acesso a determinadas entidades apenas aos seus proprietários**.
 
+Para que funcione, a entidade sujeita à autorização deve possuir um campo `userId`, cujo valor é o ID da entidade `users` (ou seja, o dono do recurso).
 
-`POST /files`
+Este campo (`authorization`) contém um **array de strings** correspondentes às entidades que queremos restringir o acesso.
 
-It uploads a set of files in a multi-part body. It returns an array of filenames as stored in the server.
+---
 
-`GET /files/:filename`
+#### `fileUpload` (envio de arquivos)
 
-If returns the file with name `filename`.
+Este campo deve ser um **objeto**.
+Se estiver presente, um novo *endpoint* `files` é criado para **upload e download de arquivos binários**.
 
-#### `filter`
+O objeto deve conter o campo `dest` com o **caminho relativo** para uma pasta existente onde os arquivos serão armazenados.
+Opcionalmente, pode conter um campo booleano `keepNames`, caso você queira manter os nomes originais dos arquivos enviados.
 
-This feature allows to have restricted access to entities that you do not own. For those entities, only the fields specified in the array `fields` will be displayed. This feature should not be used at the same time that `authorization` with the same entity.
+---
 
-#### `service`
+**`POST /files`**
 
-This feature allows to start two additional services: [peerjs](https://peerjs.com/) and [socket.io](https://socket.io/). Accepted values are `peerjs` and `ws`. There are two files in the `public` folder to test the services: `index_ws.html` and `index_peerjs.html`.
+* Faz o upload de um conjunto de arquivos em um corpo *multipart*.
+* Retorna um array com os nomes dos arquivos armazenados no servidor.
+
+**`GET /files/:filename`**
+
+* Retorna o arquivo cujo nome é `filename`.
+
+---
+
+#### `filter` (filtro)
+
+Esse recurso permite restringir o acesso a entidades que o usuário **não possui**.
+Para essas entidades, apenas os campos especificados no array `fields` serão exibidos.
+
+⚠️ Este recurso **não deve ser usado junto com `authorization`** na mesma entidade.
+
+---
+
+#### `service` (serviços)
+
+Esse recurso permite iniciar dois serviços adicionais:
+[peerjs](https://peerjs.com/) e [socket.io](https://socket.io/).
+
+Os valores aceitos são `peerjs` e `ws`.
+Existem dois arquivos na pasta `public` para testar esses serviços:
+`index_ws.html` e `index_peerjs.html`.
