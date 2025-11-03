@@ -11,7 +11,7 @@ server.use(jsonServer.bodyParser);
 server.get('/login', (req, res) => {
     // Retorna uma lista de exemplo, pois não há persistência na Vercel
     res.status(200).json([
-        { id: 1, nome: "Vercel Mock", email: "mock@vercel.com", categoria: "admin" }
+        { id: 1, nome: "Vercel Mock", email: "maria@example", categoria: "senha123" }
     ]);
 });
 
